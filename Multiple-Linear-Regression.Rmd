@@ -1,0 +1,100 @@
+---
+title: "R Linear Models"
+output: html_notebook
+---
+
+
+```{r}
+library(rmarkdown)
+this.dir <- paste(rstudioapi::getSourceEditorContext()$path,"/..")
+setwd(this.dir)
+```
+
+```{r}
+inputData = read.csv(file="prostate_cancer.csv", header=TRUE, sep = ",")
+attach(inputData)
+
+#inputData[2]:psa~inputData[9]:gleason
+logPSA = log(psa)
+```
+## find the best transformation for target data(log)
+## filt out the bad data with p-value
+## keep cancervol benpros gleason vesinv
+cancervol    0.069454   0.014624   4.749 7.77e-06 ***
+benpros      0.087470   0.029605   2.955  0.00401 ** 
+gleason      0.358153   0.127976   2.799  0.00629 ** 
+vesinv       0.782623   0.268339   2.917  0.00448 ** 
+```{r}
+allFit = lm(psa~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+print(summary(allFit))
+allFit1 = lm(logPSA~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+print(summary(allFit1))
+#allFit2 = lm(1/psa~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#print(summary(allFit2))
+#allFit3 = lm(exp(psa)~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#print(summary(allFit3))
+```
+
+Fit3 R-squared is slightly better than Fit2
+But, p-value show that we have alot of bad parameter.
+And we should keep model simple.
+So, Fit2 is the best modle.
+```{r}
+Fit1 = lm(logPSA~cancervol+benpros+gleason+vesinv)
+print(summary(Fit1))
+Fit2 = lm(logPSA~log(cancervol)+benpros+gleason+vesinv)
+print(summary(Fit2))
+Fit3 = lm(logPSA~log(cancervol)+log(cancervol*gleason)+benpros+gleason+vesinv)
+print(summary(Fit3))
+```
+## let's estimate the mean psa
+   (Intercept) log(cancervol)        benpros        gleason         vesinv 
+   -0.31632980     0.50503308     0.06418978     0.26293703     0.65880768 
+```{r}
+Fit2$coefficients
+est.psa.log = -0.31632980 + 0.50503308*mean(log(cancervol)) + 0.06418978*mean(benpros)+0.26293703*mean(gleason)+ 0.65880768*mean(vesinv)
+est.psa = exp(est.psa.log)
+print(paste("psa.mean:",mean(psa),("est.psa:"),est.psa))
+```
+
+# let's check the qq Plot
+```{r}
+par(mfrow = c(2, 3))
+qqnorm(psa)
+qqline(psa)
+qqnorm(cancervol)
+qqline(cancervol)
+qqnorm(benpros)
+qqline(benpros)
+qqnorm(vesinv)
+qqline(vesinv)
+qqnorm(gleason)
+qqline(gleason)
+
+```
+## cancervol is the only one suitable for log transformation
+We should turn the input data to normal to get the better model.
+```{r}
+par(mfrow = c(1, 2))
+qqnorm(log(cancervol))
+qqline(log(cancervol))
+qqnorm(1/(cancervol))
+qqline(1/(cancervol))
+```
+R also provide auto parameter selection by AIC value.
+The result just like us.
+```{r}
+fit <- step(lm(logPSA ~ 1), scope = list(lower = ~1, upper = ~cancervol+benpros+gleason+vesinv+age+weight+capspen), direction = "both")
+print(summary(fit))
+
+```
+We can also use lm.ridge to add penalty term(supress weight)
+The weight of age, weight, capspen is small, so we should remove it.
+```{r}
+library(MASS)
+rfit = lm.ridge(logPSA~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+print(rfit$coef)
+#weight of age weight capspen extremely samll
+
+```
+

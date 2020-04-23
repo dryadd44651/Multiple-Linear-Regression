@@ -13,3 +13,5 @@ means of the variables and qualitative predictors are at the most frequent categ
 3. Check the QQplot for transformation.
 4. Estimate the PSA
 
+![Figure 1](https://github.com/dryadd44651/Multiple-Linear-Regression/blob/master/cancerData.JPG)
+Figure 1

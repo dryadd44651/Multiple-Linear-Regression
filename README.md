@@ -14,4 +14,4 @@ means of the variables and qualitative predictors are at the most frequent categ
 4. Estimate the PSA
 
 ![Figure 1](https://github.com/dryadd44651/Multiple-Linear-Regression/blob/master/cancerData.JPG)
-Figure 1
+

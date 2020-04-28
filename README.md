@@ -7,11 +7,14 @@ We would like to understand how PSA level is related to the other predictors in 
 Build a "reasonably good" linear model for these data by taking PSA level as the response variable.
 Use the final model to predict the PSA level for a patient whose quantitative predictors are at the sample
 means of the variables and qualitative predictors are at the most frequent category.
+vesinv: qualitative variable(aka, categorical)
+gleason: quantitative variable(aka, numeric)
 
 1. Select the data by p-value
-2. Find the suitable transformation for data
-3. Check the QQplot for transformation.
-4. Estimate the PSA
+2. add dummy variable for qualitative variable
+3. Find the suitable transformation for data
+4. Check the QQplot for transformation.
+5. Estimate the PSA
 
 ![Figure 1](https://github.com/dryadd44651/Multiple-Linear-Regression/blob/master/cancerData.JPG)
 

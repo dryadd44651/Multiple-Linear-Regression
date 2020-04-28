@@ -25,13 +25,15 @@ benpros      0.087470   0.029605   2.955  0.00401 **
 gleason      0.358153   0.127976   2.799  0.00629 ** 
 vesinv       0.782623   0.268339   2.917  0.00448 ** 
 ```{r}
-allFit = lm(psa~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#allFit = lm(psa~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
+allFit = lm(psa~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
 print(summary(allFit))
-allFit1 = lm(logPSA~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#allFit1 = lm(logPSA~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
+allFit1 = lm(logPSA~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
 print(summary(allFit1))
-#allFit2 = lm(1/psa~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#allFit2 = lm(1/psa~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
 #print(summary(allFit2))
-#allFit3 = lm(exp(psa)~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+#allFit3 = lm(exp(psa)~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
 #print(summary(allFit3))
 ```
 
@@ -40,11 +42,11 @@ But, p-value show that we have alot of bad parameter.
 And we should keep model simple.
 So, Fit2 is the best modle.
 ```{r}
-Fit1 = lm(logPSA~cancervol+benpros+gleason+vesinv)
+Fit1 = lm(logPSA~cancervol+benpros+gleason+factor(vesinv))
 print(summary(Fit1))
-Fit2 = lm(logPSA~log(cancervol)+benpros+gleason+vesinv)
+Fit2 = lm(logPSA~log(cancervol)+benpros+gleason+factor(vesinv))
 print(summary(Fit2))
-Fit3 = lm(logPSA~log(cancervol)+log(cancervol*gleason)+benpros+gleason+vesinv)
+Fit3 = lm(logPSA~log(cancervol)+log(cancervol*gleason)+benpros+gleason+factor(vesinv))
 print(summary(Fit3))
 ```
 ## let's estimate the mean psa
@@ -84,7 +86,7 @@ qqline(1/(cancervol))
 R also provide auto parameter selection by AIC value.
 The result just like us.
 ```{r}
-fit <- step(lm(logPSA ~ 1), scope = list(lower = ~1, upper = ~cancervol+benpros+gleason+vesinv+age+weight+capspen), direction = "both")
+fit <- step(lm(logPSA ~ 1), scope = list(lower = ~1, upper = ~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen), direction = "both")
 print(summary(fit))
 
 ```
@@ -92,7 +94,7 @@ We can also use lm.ridge to add penalty term(supress weight)
 The weight of age, weight, capspen is small, so we should remove it.
 ```{r}
 library(MASS)
-rfit = lm.ridge(logPSA~cancervol+benpros+gleason+vesinv+age+weight+capspen)
+rfit = lm.ridge(logPSA~cancervol+benpros+gleason+factor(vesinv)+age+weight+capspen)
 print(rfit$coef)
 #weight of age weight capspen extremely samll
 

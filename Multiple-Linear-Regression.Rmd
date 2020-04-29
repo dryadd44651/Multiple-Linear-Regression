@@ -40,7 +40,7 @@ print(summary(allFit1))
 Fit3 R-squared is slightly better than Fit2
 But, p-value show that we have alot of bad parameter.
 And we should keep model simple.
-So, Fit2 is the best modle.
+So, Fit2 is the better model.
 ```{r}
 Fit1 = lm(logPSA~cancervol+benpros+gleason+factor(vesinv))
 print(summary(Fit1))
@@ -49,12 +49,24 @@ print(summary(Fit2))
 Fit3 = lm(logPSA~log(cancervol)+log(cancervol*gleason)+benpros+gleason+factor(vesinv))
 print(summary(Fit3))
 ```
-## let's estimate the mean psa
-   (Intercept) log(cancervol)        benpros        gleason         vesinv 
-   -0.31632980     0.50503308     0.06418978     0.26293703     0.65880768 
+
+## Remove intercept
+intercept is not fit well and log(cancervol) is highly linear to logPSA.
+Let's try remove intercept
+(Intercept)    -0.31633    0.76947  -0.411  0.68195 
+Adjusted R-squared:  0.9311 : significantly improve
+So, Fit4 is the best model.
+
 ```{r}
-Fit2$coefficients
-est.psa.log = -0.31632980 + 0.50503308*mean(log(cancervol)) + 0.06418978*mean(benpros)+0.26293703*mean(gleason)+ 0.65880768*mean(vesinv)
+Fit4 = lm(logPSA~0+log(cancervol)+benpros+gleason+factor(vesinv))
+print(summary(Fit4))
+```
+## let's estimate the mean psa
+ log(cancervol)         benpros         gleason factor(vesinv)0 factor(vesinv)1
+     0.50503308      0.06418978      0.26293703     -0.31632980      0.34247788
+```{r}
+Fit4$coefficients
+est.psa.log = 0.50503*log(mean(cancervol)) + 0.06419*mean(benpros)+0.26294*mean(gleason)+ 0.34248*median(vesinv)
 est.psa = exp(est.psa.log)
 print(paste("psa.mean:",mean(psa),("est.psa:"),est.psa))
 ```

@@ -66,9 +66,11 @@ print(summary(Fit4))
      0.50503308      0.06418978      0.26293703     -0.31632980      0.34247788
 ```{r}
 Fit4$coefficients
-est.psa.log = 0.50503*log(mean(cancervol)) + 0.06419*mean(benpros)+0.26294*mean(gleason)+ 0.34248*median(vesinv)
+est.psa.log = 0.50503*log(mean(cancervol)) + 0.06419*mean(benpros)+0.26294*mean(gleason)-0.31632980 
 est.psa = exp(est.psa.log)
 print(paste("psa.mean:",mean(psa),("est.psa:"),est.psa))
+input = data.frame(cancervol=mean(cancervol), benpros=mean(benpros), gleason=mean(gleason),vesinv=median(vesinv))
+exp(predict(Fit4,input))
 ```
 
 # let's check the qq Plot
